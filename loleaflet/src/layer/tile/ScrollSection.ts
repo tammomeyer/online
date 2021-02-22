@@ -441,30 +441,42 @@ class ScrollSection {
 		this.onMouseMove(point, null, e);
 	}
 
-	public onMouseWheel (point: Array<number>, delta: number, e: MouseEvent) {
+	private performVerticalScroll (delta: number) {
+		if (delta > 0)
+			this.scrollVerticalWithOffset(30);
+		else
+			this.scrollVerticalWithOffset(-30);
+
+		this.sectionProperties.drawVerticalScrollBar = true;
+		this.containerObject.requestReDraw();
+		this.sectionProperties.drawVerticalScrollBar = false;
+		this.sectionProperties.drawHorizontalScrollBar = false;
+	}
+
+	private performHorizontalScroll (delta: number) {
+		if (delta > 0)
+			this.scrollHorizontalWithOffset(30);
+		else
+			this.scrollHorizontalWithOffset(-30);
+
+		this.sectionProperties.drawHorizontalScrollBar = true;
+		this.containerObject.requestReDraw();
+		this.sectionProperties.drawVerticalScrollBar = false;
+		this.sectionProperties.drawHorizontalScrollBar = false;
+	}
+
+	public onMouseWheel (point: Array<number>, delta: Array<number>, e: MouseEvent) {
 		if (e.ctrlKey)
 			return;
 
-		if (!e.shiftKey) {
-			if (delta > 0)
-				this.scrollVerticalWithOffset(30);
+		if (Math.abs(delta[1]) > Math.abs(delta[0])) {
+			if (!e.shiftKey)
+				this.performVerticalScroll(delta[1]);
 			else
-				this.scrollVerticalWithOffset(-30);
-
-			this.sectionProperties.drawVerticalScrollBar = true;
-			this.containerObject.requestReDraw();
-			this.sectionProperties.drawVerticalScrollBar = false;
-			this.sectionProperties.drawHorizontalScrollBar = false;
+				this.performHorizontalScroll(delta[1]);
 		}
 		else {
-			if (delta > 0)
-				this.scrollHorizontalWithOffset(30);
-			else
-				this.scrollHorizontalWithOffset(-30);
-
-			this.sectionProperties.drawHorizontalScrollBar = true;
-			this.containerObject.requestReDraw();
-			this.sectionProperties.drawHorizontalScrollBar = false;
+			this.performHorizontalScroll(delta[0]);
 		}
 	}
 
